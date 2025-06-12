@@ -1,6 +1,7 @@
+
+import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -10,31 +11,38 @@ export async function middleware(request: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET,
     });
 
-    const publicRoutes = ["/login","/forgot-password","/update-password","/verify-otp"];
-
-    const isPublicRoute = publicRoutes.some((route) =>
-        pathname.startsWith(route)
-    );
-
+    const publicRoutes = ["/login", "/forgot-password", "/update-password", "/verify-otp"];
+    const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
     const isStatic = pathname.startsWith("/_next") || pathname.includes(".");
 
-    // Redirect unauthenticated users trying to access protected routes
-    if (!token && !isPublicRoute && !isStatic) {
+    // Allow access to public routes and static assets without authentication
+    if (isPublicRoute || isStatic) {
+        // If user is admin and tries to access public routes, redirect to home
+        if (token?.role === "admin" && isPublicRoute) {
+            return NextResponse.redirect(new URL("/", request.url));
+        }
+        return NextResponse.next();
+    }
+
+    // Redirect unauthenticated users to login page
+    if (!token) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Redirect authenticated users away from public routes
-    if (token && isPublicRoute) {
-        return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    // Restrict /dashboard to admin only
-    if (pathname.startsWith("/dashboard")) {
-        if (!token || token.role !== "admin") {
-            return NextResponse.redirect(new URL("/", request.url)); // Or use a /403 page
+    // Restrict /dashboard to admin role only
+    if (pathname.startsWith("/")) {
+        if (token.role !== "admin") {
+            return NextResponse.redirect(new URL("/login", request.url));
         }
+        return NextResponse.next();
     }
 
+    // For non-dashboard routes, redirect admin users to home
+    // if (token.role === "admin") {
+    //     return NextResponse.redirect(new URL("/", request.url));
+    // }
+
+    // Allow non-admin users to proceed to non-dashboard routes
     return NextResponse.next();
 }
 

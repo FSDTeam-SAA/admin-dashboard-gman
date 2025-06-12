@@ -73,7 +73,7 @@ export default function SellerRequestsPage() {
         })
         fetchSellerRequests()
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to approve seller request",

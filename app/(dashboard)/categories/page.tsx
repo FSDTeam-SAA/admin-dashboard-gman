@@ -7,7 +7,6 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 
@@ -18,24 +17,29 @@ export default function CategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div>
-          <div className="space-y-2">
+        <div className="space-y-4">
+          <div className="space-y-1">
             <h1 className="text-2xl font-bold text-gray-900 mt-2">
-              Categories
+              Categories List
             </h1>
             <p className="text-gray-600">Manage product categories</p>
           </div>
-          <Breadcrumb className="flex items-center justify-center">
+          <Breadcrumb className="flex items-center justify-center space-x-1">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            &gt;
             <BreadcrumbItem>
-              <BreadcrumbLink>Categories</BreadcrumbLink>
+              <BreadcrumbLink className="ml-1">Categories &gt; List</BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
         </div>
-        <Button onClick={() => setShowCreateForm(true)} className="bg-[#039B06]">+ Add Category</Button>
+        <Button
+          onClick={() => setShowCreateForm(true)}
+          className="bg-[#039B06] hover:bg-[#014A14] cursor-pointer"
+        >
+          + Add Category
+        </Button>
       </div>
 
       {showCreateForm && (
@@ -54,9 +58,7 @@ export default function CategoriesPage() {
         />
       )}
 
-      <CategoryList
-        onEdit={setEditingCategory}
-      />
+      <CategoryList onEdit={setEditingCategory} />
     </div>
   );
 }

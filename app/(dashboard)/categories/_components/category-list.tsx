@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/table";
 import { Edit, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DeleteConfirmationModal } from "./category-delete-modal";
+import PacificPagination from "@/components/ui/PacificPagination";
 
 interface Category {
   _id: string;
@@ -25,13 +26,11 @@ interface Category {
   updatedAt: string;
 }
 
-
-
 interface PaginationData {
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
+  total: number;
+  page: number;
   limit: number;
+  totalPage: number;
 }
 
 interface ApiResponse {
@@ -47,11 +46,7 @@ interface CategoryListProps {
 
 export default function CategoryList({ onEdit }: CategoryListProps) {
   const { data: session, status } = useSession();
-  // Adjust this path according to how you store the accessToken in your session object
   const token = (session as { accessToken?: string })?.accessToken;
-  // const token = session?.accessToken;
-
-  console.log(token);
   const queryClient = useQueryClient();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
@@ -60,7 +55,6 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  // Fetch categories with TanStack Query
   const {
     data: response,
     isLoading,
@@ -80,20 +74,19 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
       if (!response.ok) {
         throw new Error("Failed to fetch categories");
       }
-      return response.json() as Promise<ApiResponse>;
+      return response.json();
     },
     enabled: !!token && status === "authenticated",
   });
 
   const categories = response?.data.categories ?? [];
   const pagination = response?.data.pagination ?? {
-    totalItems: 0,
-    totalPages: 1,
-    currentPage: 1,
+    total: 0,
+    page: 1,
     limit,
+    totalPage: 1,
   };
 
-  // Delete category mutation
   const deleteMutation = useMutation({
     mutationFn: async (categoryId: string) => {
       const response = await fetch(
@@ -111,20 +104,13 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Category deleted successfully",
-      });
+      toast.success("Category deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       setDeleteModalOpen(false);
       setSelectedCategoryId(null);
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete category",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to delete category");
     },
   });
 
@@ -136,18 +122,6 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
   const handleDeleteConfirm = () => {
     if (selectedCategoryId) {
       deleteMutation.mutate(selectedCategoryId);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (page < pagination.totalPages) {
-      setPage(page + 1);
     }
   };
 
@@ -198,9 +172,10 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
                     <TableHead>Created At</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="flex items-center justify-end mr-[30px]">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -209,12 +184,11 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
                       <TableCell className="font-medium">
                         {category.name}
                       </TableCell>
-                      <TableCell>{category.description}</TableCell>
                       <TableCell>
                         {new Date(category.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex items-end justify-end gap-2">
                           <Button
                             size="sm"
                             variant="outline"
@@ -239,31 +213,21 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
                 </TableBody>
               </Table>
               <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-gray-600">
-                  Showing {categories.length} of {pagination.totalItems}{" "}
-                  categories
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handlePreviousPage}
-                    disabled={page === 1 || isLoading}
-                  >
-                    Previous
-                  </Button>
-                  <span className="flex items-center px-4 text-sm">
-                    Page {page} of {pagination.totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleNextPage}
-                    disabled={page === pagination.totalPages || isLoading}
-                  >
-                    Next
-                  </Button>
-                </div>
+                {categories.length > 10 && (
+                  <>
+                    <div className="text-sm text-muted-foreground">
+                      Showing {categories.length} of {pagination.total}{" "}
+                      Categories
+                    </div>
+                    <div>
+                      <PacificPagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPage}
+                        onPageChange={setPage}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </>
           )}

@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface CategoryFormProps {
@@ -69,21 +69,12 @@ export default function CategoryForm({
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: `Category ${
-          category ? "updated" : "created"
-        } successfully`,
-      });
+      toast.success("Category saved successfully");
       queryClient.invalidateQueries({ queryKey: ["categories"] }); // Refresh categories list
       onSuccess(); // Close the form or perform other success actions
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to save category",
-        variant: "destructive",
-      });
+      toast.error("Failed to save category");
     },
   });
 
@@ -124,10 +115,10 @@ export default function CategoryForm({
             />
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className="cursor-pointer">
               Cancel
             </Button>
-            <Button type="submit" className="bg-[#039B06]">{category ? "Update" : "Create"}</Button>
+            <Button type="submit" className="bg-[#039B06] cursor-pointer hover:bg-[#014A14]">{category ? "Update" : "Create"}</Button>
           </div>
         </form>
       </DialogContent>

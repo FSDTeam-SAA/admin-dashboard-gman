@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Eye, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DeleteConfirmationModal } from "./_components/delete-confirmation-modal";
 import { ProductDetailsModal } from "./_components/ProductDetailsModal";
@@ -135,20 +135,13 @@ export default function RequestProductPage() {
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Product request deleted successfully",
-      });
+      toast.success("Product request deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["request-products"] });
       setDeleteModalOpen(false);
       setSelectedProductId(null);
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete product request",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to delete product request");
     },
   });
 
@@ -178,18 +171,11 @@ export default function RequestProductPage() {
       return response.json();
     },
     onSuccess: () => {
-      toast({
-        title: "Success",
-        description: "Product status updated successfully",
-      });
+      toast.success("Product status updated successfully");
       queryClient.invalidateQueries({ queryKey: ["request-products"] });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update product status",
-        variant: "destructive",
-      });
+      toast.error(error.message || "Failed to update product status");
     },
   });
 
@@ -338,17 +324,21 @@ export default function RequestProductPage() {
                 </TableBody>
               </Table>
               <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-muted-foreground">
-                  Showing {products.length} of {pagination.total} product
-                  requests
-                </div>
-                <div>
-                  <PacificPagination
-                    currentPage={pagination.page}
-                    totalPages={pagination.totalPage}
-                    onPageChange={setPage}
-                  />
-                </div>
+                {pagination.totalPage > 10 && (
+                  <>
+                    <div className="text-sm text-muted-foreground">
+                      Showing {products.length} of {pagination.total} product
+                      requests
+                    </div>
+                    <div>
+                      <PacificPagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPage}
+                        onPageChange={setPage}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </>
           )}

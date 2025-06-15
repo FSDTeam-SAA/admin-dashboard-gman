@@ -44,7 +44,7 @@ export default function BuyerProfilePage() {
     queryKey: ["buyers", page],
     queryFn: async () => {
       const response = await fetch(
-        `https://gman54-backend.onrender.com/api/v1/admin/user-profile?page=${page}&limit=10`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/user-profile?page=${page}&limit=10`,
       )
       if (!response.ok) {
         throw new Error("Failed to fetch buyer profiles")
@@ -136,7 +136,7 @@ export default function BuyerProfilePage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-green-600 border-green-600 hover:bg-green-50"
+                          className="text-green-600 border-green-600 hover:bg-green-50 cursor-pointer"
                           onClick={() => setSelectedBuyer(buyer)}
                         >
                           See Details

@@ -9,6 +9,15 @@ import {
 } from "@/components/ui/dialog";
 import Image from "next/image";
 
+interface Review {
+  review: string;
+  rating: number;
+  product: string; // This should match the Product _id
+  // farm: string; // Optional field (commented out in your example)
+  user?: string; // Consider adding user who made the review
+  createdAt?: Date; // Consider adding timestamp
+}
+
 interface Media {
   public_id: string;
   url: string;
@@ -31,7 +40,7 @@ interface Product {
   farm: string;
   status: string;
   code: string;
-  review: any[];
+  reviews: Review[]; // Changed from 'review' to 'reviews' to match page.tsx
   createdAt: string;
   updatedAt: string;
   thumbnail: Thumbnail | null;

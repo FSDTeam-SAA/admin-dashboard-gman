@@ -41,7 +41,6 @@ export default function CategoryForm({
   const session = useSession();
   const token = (session?.data as { accessToken?: string })?.accessToken;
 
-  console.log("tttttttttttttt",token)
 
   // Inside your component
   const queryClient = useQueryClient();

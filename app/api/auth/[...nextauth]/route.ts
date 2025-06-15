@@ -1,4 +1,5 @@
-import { loginUser } from "@/actions/auth";
+
+import { loginUser } from "@/app/action/auth";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -30,7 +31,6 @@ const handler = NextAuth({
 
 
                 const user = result.data;
-                // console.log("UUUUUUUUUUUUUUU",user)
 
           
                 return {
@@ -50,7 +50,7 @@ const handler = NextAuth({
         error: "/auth/error",
     },
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user } ) {
             if (user) {
                 token.id = user.id;
                 token.role = user.role;

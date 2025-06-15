@@ -72,7 +72,7 @@ export default function SellerProfilePage() {
     queryKey: ["sellers", page],
     queryFn: async () => {
       const response = await fetch(
-        `https://gman54-backend.onrender.com/api/v1/admin/sellers?page=${page}&limit=10`,{
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/sellers?page=${page}&limit=10`,{
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -189,7 +189,7 @@ export default function SellerProfilePage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-green-600 border-green-600 hover:bg-green-50"
+                        className="text-green-600 border-green-600 hover:bg-green-50 cursor-pointer"
                         onClick={() => setSelectedSeller(seller)}
                       >
                         See Details

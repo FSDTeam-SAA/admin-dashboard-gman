@@ -26,6 +26,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+interface Review {
+  review: string;
+  rating: number;
+  product: string; // This should match the Product _id
+  // farm: string; // Optional field (commented out in your example)
+  user?: string; // Consider adding user who made the review
+  createdAt?: Date; // Consider adding timestamp
+}
+
 interface Media {
   public_id: string;
   url: string;
@@ -48,10 +57,11 @@ interface Product {
   farm: string;
   status: string;
   code: string;
-  review: any[];
+  reviews: Review[]; // Changed from 'review: any[]' to typed 'reviews: Review[]'
   createdAt: string;
   updatedAt: string;
   thumbnail: Thumbnail | null;
+  averageRating?: number; // Consider adding computed average rating
 }
 
 interface PaginationData {
@@ -303,6 +313,7 @@ export default function RequestProductPage() {
                             updateStatusMutation.isPending
                           }
                           aria-label={`View product details for ${product.title}`}
+                          className="cursor-pointer"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -315,8 +326,9 @@ export default function RequestProductPage() {
                             updateStatusMutation.isPending
                           }
                           aria-label={`Delete product request ${product.title}`}
+                          className="cursor-pointer"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-4 w-4 text-red-600" />
                         </Button>
                       </TableCell>
                     </TableRow>

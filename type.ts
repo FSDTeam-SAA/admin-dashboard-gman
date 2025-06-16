@@ -16,7 +16,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     role: string;
-    farm: string;
+    farm?: string;
     accessToken: string;
     refreshToken: string;
   }
@@ -26,7 +26,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: string;
-    farm: string;
+    farm?: string;
     accessToken: string;
     refreshToken: string;
   }

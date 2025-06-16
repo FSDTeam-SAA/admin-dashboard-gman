@@ -1,4 +1,5 @@
-import NextAuth from "next-auth"; // ✅ This is correct
+import NextAuth from "next-auth/next";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import { loginUser } from "@/app/action/auth";
 
@@ -46,7 +47,7 @@ const handler = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.farm = user.farm;
+        token.farm = user.farm ?? "";
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
       }
@@ -56,7 +57,6 @@ const handler = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
-        session.user.farm = token.farm as string;
       }
 
       session.accessToken = token.accessToken as string;

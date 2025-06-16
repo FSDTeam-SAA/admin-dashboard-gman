@@ -1,4 +1,4 @@
-import { Users, UserCheck, DollarSign, Heart } from "lucide-react"
+
 import { StatsCard } from "./stats-card"
 
 interface DashboardData {
@@ -17,29 +17,25 @@ export function DashboardStats({ data }: DashboardStatsProps) {
     {
       title: "Total Donation",
       value: `$${data.totalDonation.toLocaleString()}`,
-      icon: Heart,
-      iconColor: "text-green-500",
+      icon: "/assets/totalDonation.png",
       dotColor: "bg-green-500",
     },
     {
       title: "Total Revenue",
       value: `$${data.totalRevenue.toLocaleString()}`,
-      icon: DollarSign,
-      iconColor: "text-blue-500",
+      icon: "/assets/totalRevenue.png",
       dotColor: "bg-blue-500",
     },
     {
       title: "Total Seller",
       value: data.totalSeller.toLocaleString(),
-      icon: Users,
-      iconColor: "text-orange-500",
+      icon: "/assets/totalSeller.png",
       dotColor: "bg-orange-500",
     },
     {
       title: "Total User",
       value: data.totalUser.toLocaleString(),
-      icon: UserCheck,
-      iconColor: "text-green-600",
+      icon: "/assets/totalUser.png",
       dotColor: "bg-green-600",
     },
   ]
@@ -52,7 +48,6 @@ export function DashboardStats({ data }: DashboardStatsProps) {
           title={stat.title}
           value={stat.value}
           icon={stat.icon}
-          iconColor={stat.iconColor}
           dotColor={stat.dotColor}
         />
       ))}

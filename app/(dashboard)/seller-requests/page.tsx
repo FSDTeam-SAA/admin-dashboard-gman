@@ -199,7 +199,7 @@ export default function SellerRequestsPage() {
                           <>
                             <Button
                               size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              className="bg-green-600 hover:bg-green-700 text-white cursor-pointer"
                               onClick={() => handleApprove(request._id)}
                             >
                               Approve

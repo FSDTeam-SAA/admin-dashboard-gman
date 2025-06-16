@@ -1,62 +1,67 @@
+"use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, UserCheck } from "lucide-react"
+import { useState } from "react"
+import { DashboardStats } from "./_components/dashboard-stats"
+import { LoadingStats } from "./_components/loading-stats"
+import { DonationChart } from "./_components/donation-chart"
+import { RevenueChart } from "./_components/revenue-chart"
+import { useDashboardData } from "@/hooks/use-dashboard-data"
 
-// async function getOverviewData(accessToken?: string) {
-//   try {
-//     const headers: HeadersInit = {
-//       "Content-Type": "application/json",
-//     }
+export default function Dashboard() {
+  const [donationTimePeriod, setDonationTimePeriod] = useState<"Day" | "Week" | "Month" | "Year">("Month")
+  const [revenueTimePeriod, setRevenueTimePeriod] = useState<"Day" | "Week" | "Month" | "Year">("Month")
 
-//     if (accessToken) {
-//       headers.Authorization = `Bearer ${accessToken}`
-//     }
+  const { data: dashboardData, isLoading, error } = useDashboardData()
 
-//     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/overview`, {
-//       cache: "no-store",
-//       headers,
-//     })
+  if (isLoading) {
+    return (
+      <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Over View</h1>
+          <p className="text-gray-600">Loading dashboard data...</p>
+        </div>
+        <LoadingStats />
+      </div>
+    )
+  }
 
-//     if (!response.ok) throw new Error("Failed to fetch")
-//     const data = await response.json()
-//     return data.data
-//   } catch (error) {
-//     console.error("Error fetching overview:", error)
-//     return { totalSellers: 0, totalUsers: 0 }
-//   }
-// }
+  if (error) {
+    return (
+      <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Over View</h1>
+          <p className="text-red-600">Error loading dashboard data</p>
+        </div>
+      </div>
+    )
+  }
 
-export default async function Dashboard() {
-  // const session = await getServerSession(authOptions)
-  // const overviewData = await getOverviewData(session?.accessToken)
+  if (!dashboardData) {
+    return null
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-gray-50 min-h-screen">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Welcome to Table Fresh Admin Dashboard, </p>
+        <h1 className="text-2xl font-bold text-gray-900">Over View</h1>
+        <p className="text-gray-600">Dashboard</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Sellers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold"></div>
-          </CardContent>
-        </Card>
+      {/* Stats Cards */}
+      <DashboardStats data={dashboardData} />
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold"></div>
-          </CardContent>
-        </Card>
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <DonationChart
+          data={dashboardData.donationReport}
+          timePeriod={donationTimePeriod}
+          onTimePeriodChange={setDonationTimePeriod}
+        />
+        <RevenueChart
+          data={dashboardData.revenueReport}
+          timePeriod={revenueTimePeriod}
+          onTimePeriodChange={setRevenueTimePeriod}
+        />
       </div>
     </div>
   )

@@ -27,6 +27,11 @@ export function RevenueChart({ data, timePeriod, onTimePeriodChange }: RevenueCh
   const currentDay = now.getDate()
 
   const filteredData = data.filter((item) => {
+    // Check if item._id exists and has the required properties
+    if (!item?._id || typeof item._id !== 'object' || !item._id.year || !item._id.month || !item._id.day) {
+      return false; // Skip items with invalid _id
+    }
+
     const itemDate = new Date(item._id.year, item._id.month - 1, item._id.day)
     if (timePeriod === "Year") return item._id.year === currentYear
     if (timePeriod === "Month") return item._id.year === currentYear && item._id.month === currentMonth

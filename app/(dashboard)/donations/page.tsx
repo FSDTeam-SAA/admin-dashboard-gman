@@ -21,29 +21,35 @@ import {
 } from "@/components/ui/pagination";
 import { useSession } from "next-auth/react";
 
-// Interface for donation data
+// Updated interface for donation data based on API response
 interface Donation {
-  id: string;
-  name: string;
-  email: string;
-  amount: number;
-  comments: string;
-  date: string;
+  _id: string;
+  userId: {
+    name: string;
+    email: string;
+  };
+  price: number;
+  paymentStatus: string;
+  transactionId: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Interface for API response
 interface DonationResponse {
+  success: boolean;
+  message: string;
   data: Donation[];
-  total: number;
-  totalPage: number;
-  page: number;
+  total?: number;
+  totalPage?: number;
+  page?: number;
 }
 
 export default function DonationsPage() {
   const { data: session } = useSession();
   const token = (session as { accessToken?: string })?.accessToken;
   const [page, setPage] = useState(1);
-  const [limit] = useState(10)
+  const [limit] = useState(10);
 
   // Fetch donations using TanStack Query
   const { data, isLoading, error } = useQuery<DonationResponse>({
@@ -58,7 +64,6 @@ export default function DonationsPage() {
           },
         }
       );
-      
 
       if (!response.ok) {
         throw new Error("Failed to fetch donations");
@@ -80,7 +85,7 @@ export default function DonationsPage() {
   const donations = data?.data || [];
   const pagination = {
     page: data?.page || 1,
-    total: data?.total || 0,
+    total: data?.total || donations.length,
     totalPage: data?.totalPage || 1,
   };
 
@@ -99,20 +104,20 @@ export default function DonationsPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Mail</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Comments</TableHead>
                 <TableHead>Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {donations.map((donation) => (
-                <TableRow key={donation.id}>
-                  <TableCell className="font-medium">{donation.name}</TableCell>
-                  <TableCell>{donation.email}</TableCell>
-                  <TableCell>${donation.amount}</TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {donation.comments}
+                <TableRow key={donation._id}>
+                  <TableCell className="font-medium">
+                    {donation.userId.name}
                   </TableCell>
-                  <TableCell>{donation.date}</TableCell>
+                  <TableCell>{donation.userId.email}</TableCell>
+                  <TableCell>${donation.price}</TableCell>
+                  <TableCell>
+                    {new Date(donation.createdAt).toLocaleDateString()}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

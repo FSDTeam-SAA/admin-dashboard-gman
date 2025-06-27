@@ -108,7 +108,7 @@ export default function RevenuePage() {
 
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="text-base text-[#272727] font-medium">
             <TableHead>Farm Name</TableHead>
             <TableHead>Product Name</TableHead>
             <TableHead className="text-right">Admin Revenue</TableHead>
@@ -116,7 +116,7 @@ export default function RevenuePage() {
         </TableHeader>
         <TableBody>
           {revenueData.map((item, index) => (
-            <TableRow key={index}>
+            <TableRow className="text-base text-[#595959] font-normal" key={index}>
               <TableCell className="font-medium">{item.farm.name}</TableCell>
               <TableCell>{item.product.name}</TableCell>
               <TableCell className="text-right">

@@ -51,7 +51,7 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col w-64 bg-[#014A14] text-white">
+    <div className="flex flex-col w-[350px] bg-[#014A14] text-white">
       <div className="flex items-center gap-2 p-4 pl-6 border-b border-[#014A14]">
         <Link href="#" className="flex items-center gap-2">
           <Image
@@ -74,7 +74,7 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-2">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -82,10 +82,10 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 h-[50px] rounded text-[18px] font-medium transition-colors",
                 isActive
-                  ? "bg-green-700 text-white"
-                  : "text-green-100 hover:bg-green-700 hover:text-white"
+                  ? "bg-[#038C05] text-white"
+                  : "text-green-100 hover:bg-[#038C05]/80 hover:text-white"
               )}
             >
               <item.icon className="h-4 w-4" />

@@ -176,14 +176,14 @@ export default function BlogManagementPage() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="bg-transparent shadow-none border-none">
         <CardHeader>
           <CardTitle>Blog Posts</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="text-base text-[#272727] font-medium">
                 <TableHead>Thumbnail</TableHead>
                 <TableHead>Created At</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -191,7 +191,7 @@ export default function BlogManagementPage() {
             </TableHeader>
             <TableBody>
               {blogs.map((blog) => (
-                <TableRow key={blog._id}>
+                <TableRow className="text-base text-[#595959] font-medium" key={blog._id}>
                   <TableCell>
                     <div className="flex items-center gap-4">
                       <Image

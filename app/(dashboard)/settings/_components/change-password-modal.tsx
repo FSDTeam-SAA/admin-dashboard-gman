@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Eye, EyeOff, X } from "lucide-react";
+import { Eye, EyeOff, } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 interface ChangePasswordModalProps {
@@ -110,14 +110,7 @@ export default function ChangePasswordModal({
   };
 
   // Function to programmatically post test data
-  const postTestData = () => {
-    setFormData({
-      currentPassword: "123456",
-      newPassword: "654321",
-      confirmPassword: "654321",
-    });
-    handleSave();
-  };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,13 +118,7 @@ export default function ChangePasswordModal({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Change Password</DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+          
           </div>
         </DialogHeader>
 
@@ -221,12 +208,7 @@ export default function ChangePasswordModal({
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button
-              onClick={postTestData}
-              className="mr-2 bg-blue-600 hover:bg-blue-700"
-            >
-              Test Post
-            </Button>
+        
             <Button
               onClick={handleSave}
               disabled={changePasswordMutation.isPending}

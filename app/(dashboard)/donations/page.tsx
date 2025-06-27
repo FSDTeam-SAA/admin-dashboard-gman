@@ -96,11 +96,11 @@ export default function DonationsPage() {
         <nav className="text-sm text-gray-500">Dashboard Donations</nav>
       </div>
 
-      <Card>
+      <Card className="bg-transparent border-none shadow-none">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="text-base text-[#272727] font-normal">
                 <TableHead>Name</TableHead>
                 <TableHead>Mail</TableHead>
                 <TableHead>Amount</TableHead>
@@ -109,7 +109,7 @@ export default function DonationsPage() {
             </TableHeader>
             <TableBody>
               {donations.map((donation) => (
-                <TableRow key={donation._id}>
+                <TableRow className="text-base text-[#595959] font-normal" key={donation._id}>
                   <TableCell className="font-medium">
                     {donation.userId.name}
                   </TableCell>

@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 interface Review {
   review: string;
@@ -250,7 +251,7 @@ export default function RequestProductPage() {
         </nav>
       </div>
 
-      <Card>
+      <Card className="bg-transparent shadow-none border-none">
         <CardHeader>
           <CardTitle>Product Requests</CardTitle>
         </CardHeader>
@@ -263,7 +264,7 @@ export default function RequestProductPage() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="text-base text-[#272727] font-medium">
                     <TableHead>Product Name</TableHead>
                     <TableHead>Requested By</TableHead>
                     <TableHead>Price</TableHead>
@@ -275,11 +276,17 @@ export default function RequestProductPage() {
                 </TableHeader>
                 <TableBody>
                   {products.map((product) => (
-                    <TableRow key={product._id}>
-                      <TableCell>{product.title}</TableCell>
+                    <TableRow className="text-base text-[#595959] font-medium" key={product._id}>
+                      <TableCell>
+                        <div className="flex gap-2">
+                        <Image src={product.thumbnail?.url || "/placeholder.png"} alt={product.title} width={100} height={100} className="w-[100px] h-[60px] rounded-[8px]"/>
+                        {product.title}
+                        </div>
+
+                      </TableCell>
                       <TableCell>{product.farm}</TableCell>
                       <TableCell>{product.price}</TableCell>
-                      <TableCell>{product.quantity}</TableCell>
+                      <TableCell>{product.quantity} /Box</TableCell>
                       <TableCell>
                         {new Date(product.createdAt).toLocaleDateString()}
                       </TableCell>

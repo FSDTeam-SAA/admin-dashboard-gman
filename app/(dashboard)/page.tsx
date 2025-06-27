@@ -8,7 +8,7 @@ import { RevenueChart } from "./_components/revenue-chart"
 import { useDashboardData } from "@/hooks/use-dashboard-data"
 
 export default function Dashboard() {
-  const [donationTimePeriod, setDonationTimePeriod] = useState<"Day" | "Week" | "Month" | "Year">("Month")
+  
   const [revenueTimePeriod, setRevenueTimePeriod] = useState<"Day" | "Week" | "Month" | "Year">("Month")
 
   const { data: dashboardData, isLoading, error } = useDashboardData()
@@ -53,9 +53,7 @@ export default function Dashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <DonationChart
-          data={dashboardData.donationReport}
-          timePeriod={donationTimePeriod}
-          onTimePeriodChange={setDonationTimePeriod}
+         
         />
         <RevenueChart
           data={dashboardData.revenueReport}

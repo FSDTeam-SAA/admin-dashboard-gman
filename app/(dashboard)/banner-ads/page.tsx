@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Edit, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Define types for the ad data
 interface Ad {
@@ -430,12 +431,12 @@ export default function BannerAdsPage() {
                       {new Date(ad.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <button onClick={() => handleEdit(ad)}>
-                        <Edit />
-                      </button>
-                      <button onClick={() => handleDelete(ad._id)} className="ml-2">
-                        <Trash2 />
-                      </button>
+                      <Button  variant="outline" onClick={() => handleEdit(ad)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" onClick={() => handleDelete(ad._id)} className="ml-2">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </td>
                   </tr>
                 ))}

@@ -13,10 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import PacificPagination from "@/components/ui/PacificPagination";
-import SellerDetailsModal from "./_components/farm-details-modal";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import SellerDetailsModal from "./_components/farm-details-modal";
+import PacificPagination from "@/components/ui/PacificPagination"; // Import your custom PacificPagination
 
 interface Seller {
   _id: string;
@@ -72,7 +72,8 @@ export default function SellerProfilePage() {
     queryKey: ["sellers", page],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/sellers?page=${page}&limit=10`,{
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/sellers?page=${page}&limit=10`,
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -113,7 +114,7 @@ export default function SellerProfilePage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Seller Profile</h1>
           <nav className="text-sm text-gray-500">
-            Dashboard &gt; Seller Profile
+            Dashboard {'>'} Seller Profile
           </nav>
         </div>
         <div className="bg-green-600 text-white px-4 py-2 rounded">
@@ -124,11 +125,11 @@ export default function SellerProfilePage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-transparent shadow-none border-none">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="text-base text-[#272727] font-medium">
                 <TableHead>Seller ID</TableHead>
                 <TableHead>Seller Name</TableHead>
                 <TableHead>Verification Status</TableHead>
@@ -139,7 +140,10 @@ export default function SellerProfilePage() {
             <TableBody>
               {sellers.length > 0 ? (
                 sellers.map((seller) => (
-                  <TableRow key={seller._id}>
+                  <TableRow
+                    className="text-base text-[#595959] font-medium"
+                    key={seller._id}
+                  >
                     <TableCell className="font-mono">
                       {seller.uniqueId}
                     </TableCell>
@@ -210,7 +214,7 @@ export default function SellerProfilePage() {
             </TableBody>
           </Table>
 
-          {pagination.totalPage > 10 && (
+          {pagination.total > 0 && (
             <div className="flex justify-between items-center p-4">
               <div className="text-sm text-muted-foreground">
                 Showing {sellers.length} of {pagination.total} sellers
@@ -219,7 +223,7 @@ export default function SellerProfilePage() {
                 <PacificPagination
                   currentPage={pagination.page}
                   totalPages={pagination.totalPage}
-                  onPageChange={setPage}
+                  onPageChange={(newPage) => setPage(newPage)}
                 />
               </div>
             </div>
@@ -227,7 +231,6 @@ export default function SellerProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Farm Details Modal */}
       {selectedSeller && (
         <SellerDetailsModal
           open={!!selectedSeller}

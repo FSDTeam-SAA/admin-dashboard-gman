@@ -1,12 +1,12 @@
 "use client"
 
 interface TimePeriodSelectorProps {
-  selectedPeriod: "Day" | "Week" | "Month" | "Year"
-  onPeriodChange: (period: "Day" | "Week" | "Month" | "Year") => void
+  selectedPeriod:  "Week" | "Month" | "Year"
+  onPeriodChange: (period: "Week" | "Month" | "Year") => void
 }
 
 export function TimePeriodSelector({ selectedPeriod, onPeriodChange }: TimePeriodSelectorProps) {
-  const periods: Array<"Day" | "Week" | "Month" | "Year"> = ["Day", "Week", "Month", "Year"]
+  const periods: Array< "Week" | "Month" | "Year"> = [ "Week", "Month", "Year"]
 
   return (
     <div className="flex space-x-1">

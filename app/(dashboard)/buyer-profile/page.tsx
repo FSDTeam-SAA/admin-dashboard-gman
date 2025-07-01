@@ -89,11 +89,11 @@ export default function BuyerProfilePage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-transparent border-none shadow-none">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="text-base text-[#272727] font-midium">
                 <TableHead>User ID</TableHead>
                 <TableHead>User Name</TableHead>
                 <TableHead>Total Orders</TableHead>
@@ -108,7 +108,7 @@ export default function BuyerProfilePage() {
                 buyers.map((buyer) => {
                   const totalOrders = buyer.pending + buyer.completed + buyer.shipping + buyer.cancelled
                   return (
-                    <TableRow key={buyer.user._id}>
+                    <TableRow className="text-base text-[#595959] font-medium" key={buyer.user._id}>
                       <TableCell className="font-mono">{buyer.user._id.slice(-6)}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">

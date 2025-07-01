@@ -214,7 +214,7 @@ export default function RequestProductPage() {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="text-base text-[#272727] font-medium">
                     <TableHead>Product Name</TableHead>
                     <TableHead>Farm Name</TableHead>
                     <TableHead>Requested By</TableHead>
@@ -232,7 +232,7 @@ export default function RequestProductPage() {
                       <TableCell>{product.farm?.name || "N/A"}</TableCell>
                       <TableCell>{product.code}</TableCell>
                       <TableCell>{product.price}</TableCell>
-                      <TableCell>{product.quantity}</TableCell>
+                      <TableCell>{product.quantity} /Box</TableCell>
                       <TableCell>
                         {new Date(product.createdAt).toLocaleDateString()}
                       </TableCell>

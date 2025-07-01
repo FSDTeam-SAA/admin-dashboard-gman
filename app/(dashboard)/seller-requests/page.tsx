@@ -155,11 +155,11 @@ export default function SellerRequestsPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-transparent shadow-none border-none">
         <CardContent className="pt-4">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="text-base text-[#272727] font-medium">
                 <TableHead>Seller ID</TableHead>
                 <TableHead>Seller Name</TableHead>
                 <TableHead>Status</TableHead>
@@ -169,7 +169,7 @@ export default function SellerRequestsPage() {
             <TableBody>
               {requests.length > 0 ? (
                 requests.map((request) => (
-                  <TableRow key={request._id}>
+                  <TableRow className="text-base text-[#595959] font-medium" key={request._id}>
                     <TableCell className="font-mono">{request.code}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -159,7 +159,10 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
 
   return (
     <>
-      <div>
+      <Card className="shadow-none border-none bg-transparent">
+        <CardHeader>
+          <CardTitle>All Categories</CardTitle>
+        </CardHeader>
         <CardContent>
           {categories.length === 0 ? (
             <div className="text-center py-8">No categories found.</div>
@@ -167,9 +170,9 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="text-base text-[#272727] font-medium">
                     <TableHead>Name</TableHead>
-                    <TableHead>Created At</TableHead>
+                    <TableHead>Date</TableHead>
                     <TableHead className="flex items-center justify-end mr-[30px]">
                       Actions
                     </TableHead>
@@ -177,8 +180,8 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
                 </TableHeader>
                 <TableBody>
                   {categories.map((category) => (
-                    <TableRow key={category._id}>
-                      <TableCell className="font-medium">
+                    <TableRow className="text-[16px] text-[#595959] font-medium" key={category._id}>
+                      <TableCell className="">
                         {category.name}
                       </TableCell>
                       <TableCell>

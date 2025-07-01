@@ -232,7 +232,7 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
             </>
           )}
         </CardContent>
-      </div>
+      </Card>
       <DeleteConfirmationModal
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}

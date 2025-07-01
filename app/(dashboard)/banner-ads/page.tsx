@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 // Define types for the ad data
 interface Ad {
@@ -286,7 +287,7 @@ export default function BannerAdsPage() {
               </div>
               {previewUrl && (
                 <div className="mt-4">
-                  <img src={previewUrl} alt="Preview" className="max-w-xs rounded" />
+                  <Image width={200} height={200} src={previewUrl} alt="Preview" className="max-w-xs rounded" />
                 </div>
               )}
               <div className="flex space-x-4">
@@ -421,9 +422,11 @@ export default function BannerAdsPage() {
                 {ads.map((ad) => (
                   <tr key={ad._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <img
+                      <Image
                         src={ad.thumbnail.url}
                         alt="Banner"
+                        width={24}
+                        height={16}
                         className="w-24 h-16 object-cover rounded"
                       />
                     </td>

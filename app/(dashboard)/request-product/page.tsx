@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -25,51 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-interface Review {
-  review: string;
-  rating: number;
-  product: string; // This should match the Product _id
-  // farm: string; // Optional field (commented out in your example)
-  user?: string; // Consider adding user who made the review
-  createdAt?: Date; // Consider adding timestamp
-}
-
-interface Media {
-  public_id: string;
-  url: string;
-  type: string;
-  _id: string;
-}
-
-interface Thumbnail {
-  public_id: string;
-  url: string;
-}
-
-interface Product {
-  _id: string;
-  title: string;
-  price: number;
-  quantity: string;
-  category: string | null;
-  media: Media[];
-  farm: string;
-  status: string;
-  code: string;
-  reviews: Review[]; // Changed from 'review: any[]' to typed 'reviews: Review[]'
-  createdAt: string;
-  updatedAt: string;
-  thumbnail: Thumbnail | null;
-  averageRating?: number; // Consider adding computed average rating
-}
-
-interface PaginationData {
-  total: number;
-  page: number;
-  limit: number;
-  totalPage: number;
-}
+import type { PaginationData, Product } from "@/types/product";
 
 interface ApiResponse {
   success: boolean;
@@ -86,14 +42,11 @@ export default function RequestProductPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(
-    null
-  );
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const limit = 10;
 
-  // Fetch product requests
   const {
     data: response,
     isLoading,
@@ -127,11 +80,10 @@ export default function RequestProductPage() {
     totalPage: 1,
   };
 
-  // Delete product mutation
   const deleteMutation = useMutation({
     mutationFn: async (productId: string) => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/request-products/${productId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/product/${productId}`,
         {
           method: "DELETE",
           headers: {
@@ -155,7 +107,6 @@ export default function RequestProductPage() {
     },
   });
 
-  // Update status mutation
   const updateStatusMutation = useMutation({
     mutationFn: async ({
       productId,
@@ -250,7 +201,7 @@ export default function RequestProductPage() {
         </nav>
       </div>
 
-      <Card>
+      <div>
         <CardHeader>
           <CardTitle>Product Requests</CardTitle>
         </CardHeader>
@@ -265,9 +216,10 @@ export default function RequestProductPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Product Name</TableHead>
+                    <TableHead>Farm Name</TableHead>
                     <TableHead>Requested By</TableHead>
                     <TableHead>Price</TableHead>
-                    <TableHead>Quantity </TableHead>
+                    <TableHead>Quantity</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Actions</TableHead>
@@ -277,7 +229,8 @@ export default function RequestProductPage() {
                   {products.map((product) => (
                     <TableRow key={product._id}>
                       <TableCell>{product.title}</TableCell>
-                      <TableCell>{product.farm}</TableCell>
+                      <TableCell>{product.farm?.name || "N/A"}</TableCell>
+                      <TableCell>{product.code}</TableCell>
                       <TableCell>{product.price}</TableCell>
                       <TableCell>{product.quantity}</TableCell>
                       <TableCell>
@@ -355,7 +308,7 @@ export default function RequestProductPage() {
             </>
           )}
         </CardContent>
-      </Card>
+      </div>
       <DeleteConfirmationModal
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}

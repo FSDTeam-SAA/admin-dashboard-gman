@@ -58,6 +58,7 @@ export default function RevenuePage() {
         `${process.env.NEXT_PUBLIC_API_URL}/admin/admin-reveneu?page=${page}&limit=${limit}`
       );
       const data = await response.json();
+      console.log("DDDDDDDDDDDDDD", data)
       if (data.success) {
         setRevenueData(data.data);
         setPagination(

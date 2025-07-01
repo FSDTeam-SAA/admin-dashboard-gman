@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -96,7 +96,7 @@ export default function DonationsPage() {
         <nav className="text-sm text-gray-500">Dashboard Donations</nav>
       </div>
 
-      <Card>
+      <div>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -165,7 +165,7 @@ export default function DonationsPage() {
             </div>
           )}
         </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

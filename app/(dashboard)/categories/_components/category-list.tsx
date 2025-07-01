@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -159,10 +159,7 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Categories</CardTitle>
-        </CardHeader>
+      <div>
         <CardContent>
           {categories.length === 0 ? (
             <div className="text-center py-8">No categories found.</div>
@@ -232,7 +229,7 @@ export default function CategoryList({ onEdit }: CategoryListProps) {
             </>
           )}
         </CardContent>
-      </Card>
+      </div>
       <DeleteConfirmationModal
         open={deleteModalOpen}
         onOpenChange={setDeleteModalOpen}

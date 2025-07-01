@@ -41,7 +41,6 @@ export default function CategoryForm({
   const session = useSession();
   const token = (session?.data as { accessToken?: string })?.accessToken;
 
-
   // Inside your component
   const queryClient = useQueryClient();
 
@@ -91,8 +90,8 @@ export default function CategoryForm({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
+          <div className="space-y-2">
+            <Label htmlFor="name">Category Name</Label>
             <Input
               id="name"
               value={formData.name}
@@ -102,7 +101,7 @@ export default function CategoryForm({
               required
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
@@ -114,10 +113,20 @@ export default function CategoryForm({
             />
           </div>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose} className="cursor-pointer">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
-            <Button type="submit" className="bg-[#039B06] cursor-pointer hover:bg-[#014A14]">{category ? "Update" : "Create"}</Button>
+            <Button
+              type="submit"
+              className="bg-[#039B06] cursor-pointer hover:bg-[#014A14]"
+            >
+              {category ? "Update" : "Create"}
+            </Button>
           </div>
         </form>
       </DialogContent>

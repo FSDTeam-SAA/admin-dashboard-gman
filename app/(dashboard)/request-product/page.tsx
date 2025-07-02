@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { PaginationData, Product } from "@/types/product";
+import Image from "next/image";
 
 interface ApiResponse {
   success: boolean;
@@ -42,7 +43,9 @@ export default function RequestProductPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const limit = 10;
@@ -192,6 +195,7 @@ export default function RequestProductPage() {
     );
   }
 
+  console.log(products);
   return (
     <div className="space-y-6">
       <div>
@@ -228,7 +232,18 @@ export default function RequestProductPage() {
                 <TableBody>
                   {products.map((product) => (
                     <TableRow key={product._id}>
-                      <TableCell>{product.title}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Image
+                            src={product.thumbnail.url}
+                            alt={product.title}
+                            width={500}
+                            height={500}
+                            className="w-[100px] h-[60px]"
+                          />
+                          <p>{product.title}</p>
+                        </div>
+                      </TableCell>
                       <TableCell>{product.farm?.name || "N/A"}</TableCell>
                       <TableCell>{product.code}</TableCell>
                       <TableCell>{product.price}</TableCell>
@@ -247,7 +262,7 @@ export default function RequestProductPage() {
                             deleteMutation.isPending
                           }
                         >
-                          <SelectTrigger className="w-[120px]">
+                          <SelectTrigger className="w-[120px] bg-[#039B06] text-white cursor-pointer">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
@@ -266,7 +281,7 @@ export default function RequestProductPage() {
                             updateStatusMutation.isPending
                           }
                           aria-label={`View product details for ${product.title}`}
-                          className="cursor-pointer"
+                          className="cursor-pointer bg-[#039B06] text-white hover:text-[#039B06]"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -279,9 +294,9 @@ export default function RequestProductPage() {
                             updateStatusMutation.isPending
                           }
                           aria-label={`Delete product request ${product.title}`}
-                          className="cursor-pointer"
+                          className="cursor-pointer bg-[#039B06] text-white hover:text-[#039B06]"
                         >
-                          <Trash2 className="h-4 w-4 text-red-600" />
+                          <Trash2 className="h-4 w-4 " />
                         </Button>
                       </TableCell>
                     </TableRow>

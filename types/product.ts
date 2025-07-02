@@ -60,7 +60,10 @@ export interface Product {
   reviews: Review[];
   createdAt: string;
   updatedAt: string;
-  thumbnail: Thumbnail | null;
+  thumbnail: {
+    url: string;
+    public_id: string;
+  };
   description: string;
   averageRating?: number;
 }

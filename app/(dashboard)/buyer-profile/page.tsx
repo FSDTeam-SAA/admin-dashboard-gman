@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useState, useMemo } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
 import PacificPagination from "@/components/ui/PacificPagination"
 import BuyerDetailsModal from "./_components/buyer-details-modal"
+import DeleteConfirmationModal from "./_components/DeleteConfirmationModal" // Import the new modal
+import { Trash2 } from "lucide-react"
 
 interface User {
   _id: string
@@ -34,7 +36,10 @@ interface ApiResponse {
 export default function BuyerProfilePage() {
   const [page, setPage] = useState(1)
   const [selectedBuyer, setSelectedBuyer] = useState<UserOrderSummary | null>(null)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false) // State for delete modal
+  const [buyerToDelete, setBuyerToDelete] = useState<UserOrderSummary | null>(null) // State for buyer to delete
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const {
     data: buyersData,
@@ -44,7 +49,7 @@ export default function BuyerProfilePage() {
     queryKey: ["buyers", page],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/user-profile?page=${page}&limit=10`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/user-profile?page=${page}&limit=10`
       )
       if (!response.ok) {
         throw new Error("Failed to fetch buyer profiles")
@@ -53,6 +58,54 @@ export default function BuyerProfilePage() {
     },
   })
 
+
+  const buyers = buyersData?.data || []
+  const totalBuyers = buyers.length
+  const itemsPerPage = 10
+
+  const totalPages = useMemo(() => Math.ceil(totalBuyers / itemsPerPage), [totalBuyers])
+
+  // DELETE Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/user-profile/${id}`,
+        {
+          method: "DELETE",
+        }
+      )
+      if (!res.ok) {
+        throw new Error("Failed to delete user")
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      })
+      queryClient.invalidateQueries({ queryKey: ["buyers"] })
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
+      })
+    },
+  })
+
+  const handleDeleteBuyer = (buyer: UserOrderSummary) => {
+    setBuyerToDelete(buyer) // Set the buyer to delete
+    setDeleteModalOpen(true) // Open the delete confirmation modal
+  }
+
+  const handleConfirmDelete = () => {
+    if (buyerToDelete) {
+      deleteMutation.mutate(buyerToDelete.user._id) // Trigger the delete mutation
+    }
+  }
+
   if (error) {
     toast({
       title: "Error",
@@ -60,13 +113,6 @@ export default function BuyerProfilePage() {
       variant: "destructive",
     })
   }
-
-  const buyers = buyersData?.data || []
-  const totalBuyers = buyers.length
-
-  // Calculate pagination (assuming API doesn't provide pagination info)
-  const itemsPerPage = 10
-  const totalPages = Math.ceil(totalBuyers / itemsPerPage)
 
   if (isLoading) {
     return (
@@ -93,7 +139,7 @@ export default function BuyerProfilePage() {
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="text-base text-[#272727] font-midium">
+              <TableRow className="text-base text-[#272727] font-medium">
                 <TableHead>User ID</TableHead>
                 <TableHead>User Name</TableHead>
                 <TableHead>Total Orders</TableHead>
@@ -141,6 +187,14 @@ export default function BuyerProfilePage() {
                         >
                           See Details
                         </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 border-red-600 hover:bg-red-50 cursor-pointer ml-2"
+                          onClick={() => handleDeleteBuyer(buyer)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   )
@@ -170,7 +224,21 @@ export default function BuyerProfilePage() {
 
       {/* Buyer Details Modal */}
       {selectedBuyer && (
-        <BuyerDetailsModal open={!!selectedBuyer} onOpenChange={() => setSelectedBuyer(null)} buyer={selectedBuyer} />
+        <BuyerDetailsModal
+          open={!!selectedBuyer}
+          onOpenChange={() => setSelectedBuyer(null)}
+          buyer={selectedBuyer}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {buyerToDelete && (
+        <DeleteConfirmationModal
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          onConfirm={handleConfirmDelete}
+          buyerName={buyerToDelete.user.name}
+        />
       )}
     </div>
   )

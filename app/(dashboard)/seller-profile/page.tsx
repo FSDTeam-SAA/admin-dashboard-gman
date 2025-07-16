@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,29 +15,21 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { Trash2 } from "lucide-react";
 import SellerDetailsModal from "./_components/farm-details-modal";
-import PacificPagination from "@/components/ui/PacificPagination"; // Import your custom PacificPagination
+import PacificPagination from "@/components/ui/PacificPagination";
+import DeleteConfirmationModal from "./_components/DeleteConfirmationModal"; // Import the new modal
 
+// Interfaces (unchanged)
 interface Seller {
   _id: string;
   name: string;
   email: string;
   username: string;
   phone: string;
-  avatar: {
-    public_id: string;
-    url: string;
-  };
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-  verificationInfo: {
-    verified: boolean;
-    token: string;
-  };
+  avatar: { public_id: string; url: string };
+  address: { street: string; city: string; state: string; zipCode: string };
+  verificationInfo: { verified: boolean; token: string };
   credit: number | null;
   role: string;
   fine: number;
@@ -57,47 +49,93 @@ interface ApiResponse {
   };
 }
 
+interface Session {
+  accessToken?: string;
+}
+
 export default function SellerProfilePage() {
   const [page, setPage] = useState(1);
   const [selectedSeller, setSelectedSeller] = useState<Seller | null>(null);
-
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false); // State for delete modal
+  const [sellerToDelete, setSellerToDelete] = useState<Seller | null>(null); // State for seller to delete
   const { data: session } = useSession();
-  const token = (session as { accessToken?: string })?.accessToken;
+  const token = (session as Session)?.accessToken;
+  const queryClient = useQueryClient();
 
   const {
     data: sellersData,
     isLoading,
-    error,
   } = useQuery<ApiResponse>({
     queryKey: ["sellers", page],
     queryFn: async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/admin/sellers?page=${page}&limit=10`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch sellers");
+        }
+        return response.json();
+      } catch (err) {
+        toast.error("An error occurred while fetching sellers.");
+        throw err;
+      }
+    },
+  });
+
+  const pagination = useMemo(() => {
+    const total = sellersData?.data?.total || 0;
+    const limit = sellersData?.data?.limit || 10;
+    const page = sellersData?.data?.page || 1;
+    return {
+      total,
+      page,
+      limit,
+      totalPage: Math.ceil(total / limit),
+    };
+  }, [sellersData]);
+
+  const sellers = sellersData?.data?.sellers || [];
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/sellers?page=${page}&limit=10`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/sellers/${id}`,
         {
+          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch sellers");
+        throw new Error("Failed to delete seller");
       }
       return response.json();
     },
+    onSuccess: () => {
+      toast.success("Seller deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["sellers"] });
+    },
+    onError: () => {
+      toast.error("Failed to delete seller");
+    },
   });
 
-  if (error) {
-    toast.error("Failed to fetch sellers");
-  }
+  const handleDeleteClick = (seller: Seller) => {
+    setSellerToDelete(seller); // Set the seller to delete
+    setDeleteModalOpen(true); // Open the delete confirmation modal
+  };
 
-  const sellers = sellersData?.data?.sellers || [];
-  const pagination = {
-    total: sellersData?.data?.total || 0,
-    page: sellersData?.data?.page || 1,
-    limit: sellersData?.data?.limit || 10,
-    totalPage: Math.ceil(
-      (sellersData?.data?.total || 0) / (sellersData?.data?.limit || 10)
-    ),
+  const handleConfirmDelete = () => {
+    if (sellerToDelete) {
+      deleteMutation.mutate(sellerToDelete._id); // Trigger the delete mutation
+    }
   };
 
   if (isLoading) {
@@ -114,7 +152,7 @@ export default function SellerProfilePage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Seller Profile</h1>
           <nav className="text-sm text-gray-500">
-            Dashboard {'>'} Seller Profile
+            Dashboard {">"} Seller Profile
           </nav>
         </div>
         <div className="bg-green-600 text-white px-4 py-2 rounded">
@@ -198,6 +236,15 @@ export default function SellerProfilePage() {
                       >
                         See Details
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDeleteClick(seller)} // Pass the entire seller object
+                        aria-label={`Delete seller ${seller.name}`}
+                        className="ml-2 cursor-pointer bg-[#039B06] text-white hover:text-[#039B06]"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -236,6 +283,15 @@ export default function SellerProfilePage() {
           open={!!selectedSeller}
           onOpenChange={() => setSelectedSeller(null)}
           seller={selectedSeller}
+        />
+      )}
+
+      {sellerToDelete && (
+        <DeleteConfirmationModal
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          onConfirm={handleConfirmDelete}
+          sellerName={sellerToDelete.name}
         />
       )}
     </div>

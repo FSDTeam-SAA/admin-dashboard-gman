@@ -51,7 +51,7 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col w-[350px] bg-[#014A14] text-white">
+    <div className="flex flex-col md:w-[250px] lg:w-[300px] bg-[#014A14] text-white">
       <div className="flex items-center gap-2 p-4 pl-6 border-b border-[#014A14]">
         <Link href="#" className="flex items-center gap-2">
           <Image

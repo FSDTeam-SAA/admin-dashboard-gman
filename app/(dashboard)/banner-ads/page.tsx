@@ -425,8 +425,8 @@ export default function BannerAdsPage() {
                       <Image
                         src={ad.thumbnail.url}
                         alt="Banner"
-                        width={24}
-                        height={16}
+                        width={300}
+                        height={300}
                         className="w-24 h-16 object-cover rounded"
                       />
                     </td>

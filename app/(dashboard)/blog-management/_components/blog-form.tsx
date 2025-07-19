@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
@@ -11,6 +10,7 @@ import { Upload, Save } from "lucide-react"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { RichTextEditor } from "./rich-text-editor"
+import { toast } from "sonner"
 
 interface Blog {
   _id: string
@@ -33,10 +33,8 @@ interface BlogFormProps {
 export function BlogForm({ blog, onClose, onSuccess }: BlogFormProps) {
   const [title, setTitle] = useState(blog?.blogName || "")
   const [description, setDescription] = useState(blog?.description || "")
-  const [content, setContent] = useState("")
   const [thumbnail, setThumbnail] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState(blog?.thumbnail.url || "")
-console.log(setDescription)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const session = useSession()
@@ -57,39 +55,71 @@ console.log(setDescription)
       })
 
       if (!response.ok) {
-        throw new Error("Failed to save blog")
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to save blog")
       }
       return response.json()
     },
     onSuccess: () => {
+      toast.success(blog ? "Blog updated successfully!" : "Blog created successfully!")
       onSuccess()
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to save blog", {
+        description: error.message,
+      })
     },
   })
 
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast.error("File too large", {
+          description: "Please select an image smaller than 10MB",
+        })
+        return
+      }
       setThumbnail(file)
       const reader = new FileReader()
       reader.onload = (e) => {
         setThumbnailPreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
+      toast.success("Thumbnail selected")
     }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!title.trim()) {
+      toast.error("Title is required")
+      return
+    }
+
+    if (!description.trim()) {
+      toast.error("Content is required")
+      return
+    }
+
+    const toastId = toast.loading(blog ? "Updating blog..." : "Creating blog...")
+
     const formData = new FormData()
     formData.append("blogName", title)
-    formData.append("description", content)
+    formData.append("description", description)
 
     if (thumbnail) {
       formData.append("thumbnail", thumbnail)
+    } else if (blog?.thumbnail.url && !thumbnailPreview) {
+      formData.append("removeThumbnail", "true")
     }
 
-    saveBlogMutation.mutate(formData)
+    saveBlogMutation.mutate(formData, {
+      onSettled: () => {
+        toast.dismiss(toastId)
+      }
+    })
   }
 
   return (
@@ -104,7 +134,7 @@ console.log(setDescription)
         <Button
           className="bg-green-600 hover:bg-green-700"
           onClick={handleSubmit}
-          disabled={saveBlogMutation.isPending || !title.trim()}
+          disabled={saveBlogMutation.isPending || !title.trim() || !description.trim()}
         >
           <Save className="h-4 w-4 mr-2" />
           {saveBlogMutation.isPending ? "Saving..." : "Save Blog"}
@@ -130,7 +160,7 @@ console.log(setDescription)
                 <label className="block text-sm font-medium mb-2">Content</label>
                 <RichTextEditor
                   content={description}
-                  onChange={setContent}
+                  onChange={setDescription}
                   placeholder="Start writing your blog content..."
                 />
               </div>
@@ -149,13 +179,25 @@ console.log(setDescription)
                 {thumbnailPreview ? (
                   <div className="space-y-4">
                     <Image
-                      src={thumbnailPreview || "/placeholder.svg"}
+                      src={thumbnailPreview}
                       alt="Thumbnail preview"
                       width={200}
                       height={150}
                       className="mx-auto rounded object-cover"
                     />
-                    <p className="text-sm text-gray-500">Click to change thumbnail</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setThumbnail(null)
+                        setThumbnailPreview("")
+                        toast.info("Thumbnail removed")
+                      }}
+                    >
+                      Remove Thumbnail
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -184,7 +226,7 @@ console.log(setDescription)
             <Button
               type="submit"
               className="flex-1 bg-green-600 hover:bg-green-700"
-              disabled={saveBlogMutation.isPending || !title.trim()}
+              disabled={saveBlogMutation.isPending || !title.trim() || !description.trim()}
             >
               {saveBlogMutation.isPending ? "Saving..." : "Save"}
             </Button>

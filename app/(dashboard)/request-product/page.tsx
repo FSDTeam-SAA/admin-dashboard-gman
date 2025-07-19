@@ -86,7 +86,7 @@ export default function RequestProductPage() {
   const deleteMutation = useMutation({
     mutationFn: async (productId: string) => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/product/${productId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/request-products/${productId}`,
         {
           method: "DELETE",
           headers: {

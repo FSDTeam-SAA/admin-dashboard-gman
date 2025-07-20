@@ -248,7 +248,7 @@ export default function BannerAdsPage() {
         </div>
         <button
           onClick={openModal}
-          className="px-4 py-2 bg-[#039B06] text-white rounded hover:bg-[#039B06]/80"
+          className="px-4 py-2 bg-[#039B06] text-white rounded hover:bg-[#039B06]/80 cursor-pointer"
         >
           Add New Banner
         </button>
@@ -293,7 +293,7 @@ export default function BannerAdsPage() {
               <div className="flex space-x-4">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#039B06] text-white rounded hover:bg-[#039B06] flex items-center"
+                  className="px-4 py-2 bg-[#039B06] text-white rounded hover:bg-[#039B06] flex items-center cursor-pointer"
                   disabled={createMutation.isPending || updateMutation.isPending}
                 >
                   {createMutation.isPending || updateMutation.isPending ? (
@@ -305,7 +305,7 @@ export default function BannerAdsPage() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 cursor-pointer"
                   disabled={createMutation.isPending || updateMutation.isPending}
                 >
                   Cancel
@@ -338,7 +338,7 @@ export default function BannerAdsPage() {
             <div className="flex space-x-4">
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 cursor-pointer"
                 disabled={deleteMutation.isPending}
                 aria-label="Confirm deletion of banner ad"
               >
@@ -350,7 +350,7 @@ export default function BannerAdsPage() {
               </button>
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 cursor-pointer"
                 disabled={deleteMutation.isPending}
             >
               Cancel
@@ -433,11 +433,11 @@ export default function BannerAdsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#272727]">
                       {new Date(ad.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <Button  variant="outline" onClick={() => handleEdit(ad)}>
+                    <td className="px-6 py-4 whitespace-nowrap ">
+                      <Button  variant="outline" onClick={() => handleEdit(ad)} className="cursor-pointer">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" onClick={() => handleDelete(ad._id)} className="ml-2">
+                      <Button variant="outline" onClick={() => handleDelete(ad._id)} className="ml-2 cursor-pointer">
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </td>

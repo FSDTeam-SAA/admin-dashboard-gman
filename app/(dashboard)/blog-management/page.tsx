@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +23,7 @@ interface Blog {
   _id: string;
   blogName: string;
   description: string;
-  thumbnail: {
+  thumbnail?: {
     url: string;
     public_id: string;
   };
@@ -61,6 +61,7 @@ export default function BlogManagementPage() {
   } = useQuery<BlogsResponse>({
     queryKey: ["blogs", currentPage],
     queryFn: async () => {
+      if (!token) throw new Error("Authentication token missing");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/blogs?page=${currentPage}&limit=5`,
         {
@@ -77,8 +78,20 @@ export default function BlogManagementPage() {
     enabled: !!token,
   });
 
+  useEffect(() => {
+    if (blogsData?.data?.blogs) {
+      console.log("Blogs data:", blogsData.data.blogs);
+      blogsData.data.blogs.forEach((blog: Blog, index: number) => {
+        if (!blog.thumbnail) {
+          console.warn(`Blog at index ${index} has no thumbnail`, blog);
+        }
+      });
+    }
+  }, [blogsData]);
+
   const deleteBlogMutation = useMutation({
     mutationFn: async (id: string) => {
+      if (!token) throw new Error("Authentication token missing");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/blogs/${id}`,
         {
@@ -164,7 +177,7 @@ export default function BlogManagementPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Blog management</h1>
           <nav className="text-sm text-gray-500">
-            Dashboard &gt; Blog management &gt; List
+            Dashboard / Blog management / List
           </nav>
         </div>
         <Button
@@ -195,13 +208,12 @@ export default function BlogManagementPage() {
                   <TableCell>
                     <div className="flex items-center gap-4">
                       <Image
-                        src={blog.thumbnail.url || "/placeholder.svg"}
+                        src={blog.thumbnail?.url || "/placeholder.svg"}
                         alt={blog.blogName}
                         width={60}
                         height={40}
                         className="rounded object-cover"
                       />
-
                       <div>
                         <p className="font-semibold">{blog.blogName}</p>
                         <p
@@ -234,7 +246,7 @@ export default function BlogManagementPage() {
                         disabled={deleteBlogMutation.isPending}
                         className="cursor-pointer"
                       >
-                        <Trash2 className="h-4 w-4  text-red-600" />
+                        <Trash2 className="h-4 w-4 text-red-600" />
                       </Button>
                     </div>
                   </TableCell>

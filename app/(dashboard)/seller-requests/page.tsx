@@ -1,145 +1,161 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { toast } from "sonner"
-import { useSession } from "next-auth/react"
-import PacificPagination from "@/components/ui/PacificPagination"
-import SellerRequestDetails from "./_components/seller-request-details"
-import { Trash2 } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"; // Import useCallback
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import PacificPagination from "@/components/ui/PacificPagination";
+import SellerRequestDetails from "./_components/seller-request-details";
+import { Trash2 } from "lucide-react";
 
 interface SellerRequest {
-  _id: string
-  name: string
-  description: string
-  status: string
-  isOrganic: boolean
+  _id: string;
+  name: string;
+  description: string;
+  status: string;
+  isOrganic: boolean;
   location: {
-    street: string
-    city: string
-    state: string
-    zipCode: string
-  }
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  };
   images: Array<{
-    url: string
-    public_id: string
-  }>
+    url: string;
+    public_id: string;
+  }>;
   seller: {
-    _id: string
-    name: string
-    email: string
-    phone: string
-  } | null
-  code: string
-  createdAt: string
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+  } | null;
+  code: string;
+  createdAt: string;
 }
 
 interface PaginationData {
-  total: number
-  page: number
-  limit: number
-  totalPage: number
+  total: number;
+  page: number;
+  limit: number;
+  totalPage: number;
 }
 
 export default function SellerRequestsPage() {
-  const [requests, setRequests] = useState<SellerRequest[]>([])
-  const [loading, setLoading] = useState(true)
-  const [selectedRequest, setSelectedRequest] = useState<SellerRequest | null>(null)
-  const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [requests, setRequests] = useState<SellerRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedRequest, setSelectedRequest] = useState<SellerRequest | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
   const [pagination, setPagination] = useState<PaginationData>({
     total: 0,
     page: 1,
     limit: 5,
     totalPage: 1,
-  })
+  });
 
+  const { data: session } = useSession();
+  const token = (session as { accessToken?: string })?.accessToken;
 
-  const { data: session } = useSession()
-  const token = (session as { accessToken?: string })?.accessToken
-
-  useEffect(() => {
-    fetchSellerRequests()
-  }, [page])
-
-  const fetchSellerRequests = async () => {
+  const fetchSellerRequests = useCallback(async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/seller-requests?page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
-      )
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch seller requests")
+        throw new Error("Failed to fetch seller requests");
       }
 
-      const data = await response.json()
+      const data = await response.json();
       if (data.success) {
-        setRequests(data.data.sellerRequests)
-        setPagination(data.data.pagination)
+        setRequests(data.data.sellerRequests);
+        setPagination(data.data.pagination);
       }
     } catch (error) {
-      console.error("Error fetching seller requests:", error)
-      toast.error("Failed to fetch seller requests")
+      console.error("Error fetching seller requests:", error);
+      toast.error("Failed to fetch seller requests");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  }, [page, limit, token]); // Include page, limit, and token as dependencies
+
+  useEffect(() => {
+    fetchSellerRequests();
+  }, [fetchSellerRequests]); // Include fetchSellerRequests in the dependency array
 
   const handleApprove = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/seller-requests/${id}/approve`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/seller-requests/${id}/approve`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to approve request")
+        throw new Error("Failed to approve request");
       }
 
-      toast.success("Seller request approved successfully")
-      fetchSellerRequests()
-    } catch{
-      toast.error("Failed to approve seller request")
+      toast.success("Seller request approved successfully");
+      fetchSellerRequests();
+    } catch {
+      toast.error("Failed to approve seller request");
     }
-  }
+  };
 
   const handleReject = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/seller-requests/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/seller-requests/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to reject request")
+        throw new Error("Failed to reject request");
       }
 
-      toast.success("Seller request rejected successfully")
-      fetchSellerRequests()
+      toast.success("Seller request rejected successfully");
+      fetchSellerRequests();
     } catch {
-      toast.error("Failed to reject seller request")
+      toast.error("Failed to reject seller request");
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -147,7 +163,7 @@ export default function SellerRequestsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Seller Profile Request</h1>
-          <nav className="text-sm text-gray-500">Dashboard &gt; Seller Profile Request</nav>
+          <nav className="text-sm text-gray-500">Dashboard / Seller Profile Request</nav>
         </div>
         <div className="bg-green-600 text-white px-4 py-2 rounded">
           <div className="text-sm">Total Request</div>
@@ -226,7 +242,7 @@ export default function SellerRequestsPage() {
             </TableBody>
           </Table>
 
-          {pagination.totalPage > 10 && (
+          {pagination.totalPage > 1 && ( // Fix condition for pagination
             <div className="flex justify-between items-center mt-4">
               <div className="text-sm text-muted-foreground">
                 Showing {requests.length} of {pagination.total} requests
@@ -251,5 +267,5 @@ export default function SellerRequestsPage() {
         />
       )}
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react"; // Import useCallback
 import {
   Table,
   TableBody,
@@ -47,18 +47,13 @@ export default function RevenuePage() {
     totalPage: 1,
   });
 
-  useEffect(() => {
-    fetchRevenueData();
-  }, [page]);
-
-  const fetchRevenueData = async () => {
+  const fetchRevenueData = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/admin/admin-reveneu?page=${page}&limit=${limit}`
       );
       const data = await response.json();
-      console.log("DDDDDDDDDDDDDD", data)
       if (data.success) {
         setRevenueData(data.data);
         setPagination(
@@ -75,15 +70,17 @@ export default function RevenuePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, limit]); // Include page and limit as dependencies
+
+  useEffect(() => {
+    fetchRevenueData();
+  }, [fetchRevenueData]); // Include fetchRevenueData in the dependency array
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">Loading...</div>
     );
   }
-
-
 
   return (
     <div className="space-y-6">
@@ -98,10 +95,10 @@ export default function RevenuePage() {
           <BreadcrumbItem>
             <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
           </BreadcrumbItem>
-          &gt;
+          
           <BreadcrumbItem>
             <BreadcrumbLink className="ml-1">
-              Revenue from Seller &gt; List
+              Revenue from Seller / List
             </BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>

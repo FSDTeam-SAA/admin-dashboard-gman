@@ -67,7 +67,7 @@ const updateAd = async ({ id, formData, token }: { id: string; formData: FormDat
   if (!token) throw new Error("No token found");
 
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/banner-ads/${id}`, {
-    method: "PUT",
+    method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
     },

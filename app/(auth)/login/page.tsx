@@ -177,13 +177,6 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-6 text-center text-sm">
-              <span className="text-gray-600">New To our Platform? </span>
-              <Link href="/sign-up" className="text-green-600 hover:text-green-500 font-medium transition-colors">
-                Sign Up Here
-              </Link>
-            </div>
           </div>
         </div>
       </div>

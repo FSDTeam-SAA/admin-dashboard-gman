@@ -93,7 +93,7 @@ export default function ResetPasswordcontent() {
           <div className="mb-8 backdrop-blur-[50px] bg-white/23 shadow-[0px_4px_4px_0px_rgba(93,93,93,0.25)] p-5 rounded-[16px]">
             <div className="flex items-start gap-2">
               <Image
-                src="/asset/logo.png"
+                src="/assets/logo.png"
                 width={40}
                 height={53}
                 alt="Table Fresh Logo"

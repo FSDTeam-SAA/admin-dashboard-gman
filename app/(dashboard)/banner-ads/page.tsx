@@ -158,7 +158,7 @@ export default function BannerAdsPage() {
     queryFn: () => fetchAds(session?.accessToken),
   });
 
-  console.log("AAAAAAAAAAAAAAAA", ads);
+
 
   if (isError && error) {
     toast.error(error.message || "Failed to load ads");

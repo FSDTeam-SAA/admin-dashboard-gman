@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Tag,
-  Package,
   Heart,
   DollarSign,
   Upload,
@@ -24,7 +23,7 @@ import { toast } from "sonner";
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Categories", href: "/categories", icon: Tag },
-  { name: "Request Product", href: "/request-product", icon: Package },
+  // { name: "Request Product", href: "/request-product", icon: Package },
   { name: "Donations", href: "/donations", icon: Heart },
   { name: "Revenue from Seller", href: "/revenue", icon: DollarSign },
   { name: "Upload Banner Ads", href: "/banner-ads", icon: Upload },
